@@ -14,7 +14,7 @@ from utils.helpers import (
     clear_and_send_keys,
     generate_unique_email
 )
-from config.config import BASE_URL
+from config.config import BASE_URL, TEST_USER_EMAIL, TEST_USER_PASSWORD
 
 
 @pytest.mark.smoke
@@ -35,14 +35,11 @@ def test_registro_exitoso(driver):
     register_button.click()
     time.sleep(1)
 
-    email = generate_unique_email()
-    password = "TestPassword123"
-
     email_field = wait_for_element(driver, (By.ID, "email"))
     password_field = wait_for_element(driver, (By.ID, "password"))
 
-    clear_and_send_keys(email_field, email)
-    clear_and_send_keys(password_field, password)
+    clear_and_send_keys(email_field, TEST_USER_EMAIL)
+    clear_and_send_keys(password_field, TEST_USER_PASSWORD)
 
     submit_button = wait_for_element_clickable(driver, (By.CSS_SELECTOR, "button[type='submit']"))
     submit_button.click()
@@ -77,7 +74,7 @@ def test_registro_email_duplicado(driver):
     password_field = wait_for_element(driver, (By.ID, "password"))
 
     clear_and_send_keys(email_field, TEST_USER_EMAIL)
-    clear_and_send_keys(password_field, "TestPassword123")
+    clear_and_send_keys(password_field, TEST_USER_PASSWORD)
 
     submit_button = wait_for_element_clickable(driver, (By.CSS_SELECTOR, "button[type='submit']"))
     submit_button.click()

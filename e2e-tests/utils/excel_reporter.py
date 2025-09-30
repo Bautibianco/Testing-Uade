@@ -199,5 +199,5 @@ class ExcelReporter:
 
         self.add_summary()
         self.workbook.save(filepath)
-        print(f"\n✓ Reporte Excel generado: {filepath}")
+        print(f"\n[OK] Reporte Excel generado: {filepath}")
         return filepath

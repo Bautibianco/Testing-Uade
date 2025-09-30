@@ -15,7 +15,7 @@ EXPLICIT_WAIT = 15
 
 # Credenciales de prueba (usuarios de test)
 TEST_USER_EMAIL = "test_user_selenium@example.com"
-TEST_USER_PASSWORD = "TestPassword123"
+TEST_USER_PASSWORD = "TestPassword123!"
 
 # Credenciales de usuario alternativo para pruebas
 ALT_USER_EMAIL = "test_alt_user@example.com"

@@ -25,16 +25,21 @@ def test_logout(authenticated_driver):
     driver.get(f"{BASE_URL}/calendar")
     time.sleep(1)
 
-    logout_button = wait_for_element_clickable(driver, (
+    # Primero hacer clic en el botón del menú de usuario (avatar)
+    user_menu_button = wait_for_element_clickable(driver, (
         By.CSS_SELECTOR,
-        "button:contains('Logout'), button:contains('Cerrar sesión'), a:contains('Logout')"
+        "button[aria-haspopup='true']"
     ))
 
-    if not logout_button:
-        logout_button = wait_for_element_clickable(driver, (
-            By.CSS_SELECTOR,
-            "[class*='logout'], [id*='logout']"
-        ))
+    if user_menu_button:
+        user_menu_button.click()
+        time.sleep(0.5)
+
+    # Ahora hacer clic en el botón "Cerrar sesión" del dropdown
+    logout_button = wait_for_element_clickable(driver, (
+        By.XPATH,
+        "//button[contains(text(), 'Cerrar sesión')]"
+    ))
 
     if logout_button:
         logout_button.click()
