@@ -1,0 +1,16 @@
+{
+  "name": "focusu",
+  "version": "1.0.0",
+  "description": "PWA para organizar exámenes, trabajos prácticos y recordatorios de clases",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,green \"npm:dev --prefix server\" \"npm:dev --prefix web\"",
+    "install:all": "npm install && npm install --prefix server && npm install --prefix web"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "axios": "^1.12.2"
+  }
+}
