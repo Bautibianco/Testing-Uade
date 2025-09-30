@@ -4,7 +4,7 @@ import { useEvents } from '../hooks/useEvents';
 import { Event } from '../types';
 
 const CalendarPage: React.FC = () => {
-  const [currentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
   const { events, loading, deleteEvent } = useEvents(currentDate);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -49,6 +49,8 @@ const CalendarPage: React.FC = () => {
           <CalendarMonth
             events={events}
             loading={loading}
+            currentDate={currentDate}
+            onDateChange={setCurrentDate}
             onEventClick={handleEventClick}
             onEventDelete={handleEventDelete}
           />

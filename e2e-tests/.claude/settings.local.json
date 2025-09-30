@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Remove-Item -Recurse -Force \"$env:USERPROFILE\\.wdm\")",
+      "Bash(powershell:*)",
+      "Bash(pytest:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(curl:*)",
+      "Read(//c/Users/Bautista/Desktop/TestingDeAplicaciones/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

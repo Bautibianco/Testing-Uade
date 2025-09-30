@@ -17,6 +17,8 @@ import DayCell from './DayCell';
 interface CalendarMonthProps {
   events: Event[];
   loading: boolean;
+  currentDate: Date;
+  onDateChange: (date: Date) => void;
   onEventClick: (event: Event) => void;
   onEventDelete: (eventId: string) => void;
 }
@@ -24,25 +26,26 @@ interface CalendarMonthProps {
 const CalendarMonth: React.FC<CalendarMonthProps> = ({
   events,
   loading,
+  currentDate,
+  onDateChange,
   onEventClick,
   onEventDelete
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const calendarDays = generateCalendarDays(currentDate);
   const daysWithEvents = populateCalendarWithEvents(calendarDays, events);
 
   const goToPreviousMonth = () => {
-    setCurrentDate(subMonths(currentDate, 1));
+    onDateChange(subMonths(currentDate, 1));
   };
 
   const goToNextMonth = () => {
-    setCurrentDate(addMonths(currentDate, 1));
+    onDateChange(addMonths(currentDate, 1));
   };
 
   const goToToday = () => {
-    setCurrentDate(new Date());
+    onDateChange(new Date());
   };
 
   const getEventsForDate = (date: Date): Event[] => {
