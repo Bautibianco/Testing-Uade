@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Bautista/Desktop/TestingDeAplicaciones/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
