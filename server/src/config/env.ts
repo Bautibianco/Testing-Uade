@@ -10,7 +10,7 @@ if (!process.env.NODE_ENV) {
 }
 
 export const config = {
-  port: process.env.PORT || 3001,
+  port: process.env.PORT || 8080,
   nodeEnv: process.env.NODE_ENV || 'development',
   mongodbUri: process.env.MONGODB_URI || '',
   jwtSecret: process.env.JWT_SECRET || 'fallback-secret-for-development',

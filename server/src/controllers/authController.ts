@@ -65,7 +65,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       user: {
         _id: user._id,
         email: user.email
-      }
+      },
+      token
     });
   } catch (error) {
     console.error('Error en registro:', error);
@@ -108,7 +109,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       user: {
         _id: user._id,
         email: user.email
-      }
+      },
+      token
     });
   } catch (error) {
     console.error('Error en login:', error);

@@ -3,7 +3,9 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
 import { config, useMemoryDb } from './config/env';
+import { swaggerSpec } from './config/swagger';
 import { connectMongoDB } from './repositories/mongo';
 import authRoutes from './routes/auth';
 import eventRoutes from './routes/events';
@@ -25,7 +27,7 @@ app.use(helmet({
 
 // CORS configurado para el frontend
 app.use(cors({
-  origin: config.corsOrigin,
+  origin: config.corsOrigin.split(',').map(o => o.trim()),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -38,6 +40,18 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Documentación Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'FocusU API Documentation'
+}));
+
+// Ruta para obtener el spec de Swagger en JSON
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // Rutas
 app.use('/auth', authRoutes);
@@ -78,6 +92,7 @@ const startServer = async () => {
       console.log(`🚀 Servidor ejecutándose en puerto ${config.port}`);
       console.log(`🌐 Frontend: ${config.corsOrigin}`);
       console.log(`📊 Health check: http://localhost:${config.port}/health`);
+      console.log(`📚 API Docs: http://localhost:${config.port}/api-docs`);
     });
   } catch (error) {
     console.error('❌ Error iniciando servidor:', error);
