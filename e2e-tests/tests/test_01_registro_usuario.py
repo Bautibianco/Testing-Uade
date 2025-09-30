@@ -47,12 +47,8 @@ def test_registro_exitoso_con_datos_validos(driver):
     driver.get(f"{BASE_URL}/login")
     time.sleep(1)
 
-    # Clickear botón de registrar usuario
-    register_button = wait_for_element_clickable(driver, (By.LINK_TEXT, "Regístrate aquí"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "Regístrate"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "aquí"))
+    # Clickear botón de registrar usuario (es un button, no un link)
+    register_button = wait_for_element_clickable(driver, (By.XPATH, "//button[contains(text(), 'Regístrate aquí')]"))
     assert register_button is not None, "Botón de registrar no encontrado en login"
     register_button.click()
     time.sleep(1)
@@ -107,12 +103,8 @@ def test_registro_email_duplicado(driver):
     driver.get(f"{BASE_URL}/login")
     time.sleep(1)
 
-    # Clickear botón de registrar usuario
-    register_button = wait_for_element_clickable(driver, (By.LINK_TEXT, "Regístrate aquí"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "Regístrate"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "aquí"))
+    # Clickear botón de registrar usuario (es un button, no un link)
+    register_button = wait_for_element_clickable(driver, (By.XPATH, "//button[contains(text(), 'Regístrate aquí')]"))
     assert register_button is not None, "Botón de registrar no encontrado en login"
     register_button.click()
     time.sleep(1)
@@ -128,10 +120,10 @@ def test_registro_email_duplicado(driver):
 
     time.sleep(2)
 
-    # Verificar que hay un mensaje de error o permanece en la página
+    # Verificar que hay un mensaje de error o permanece en la página de login
     current_url = driver.current_url
-    # Debe permanecer en registro o mostrar error
-    assert "/register" in current_url or "error" in driver.page_source.lower()
+    # Debe permanecer en login o mostrar error
+    assert "/login" in current_url or "error" in driver.page_source.lower()
 
 
 @pytest.mark.regression
@@ -152,12 +144,8 @@ def test_registro_password_corto(driver):
     driver.get(f"{BASE_URL}/login")
     time.sleep(1)
 
-    # Clickear botón de registrar usuario
-    register_button = wait_for_element_clickable(driver, (By.LINK_TEXT, "Regístrate aquí"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "Regístrate"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "aquí"))
+    # Clickear botón de registrar usuario (es un button, no un link)
+    register_button = wait_for_element_clickable(driver, (By.XPATH, "//button[contains(text(), 'Regístrate aquí')]"))
     assert register_button is not None, "Botón de registrar no encontrado en login"
     register_button.click()
     time.sleep(1)
@@ -198,12 +186,8 @@ def test_registro_email_invalido(driver):
     driver.get(f"{BASE_URL}/login")
     time.sleep(1)
 
-    # Clickear botón de registrar usuario
-    register_button = wait_for_element_clickable(driver, (By.LINK_TEXT, "Regístrate aquí"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "Regístrate"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "aquí"))
+    # Clickear botón de registrar usuario (es un button, no un link)
+    register_button = wait_for_element_clickable(driver, (By.XPATH, "//button[contains(text(), 'Regístrate aquí')]"))
     assert register_button is not None, "Botón de registrar no encontrado en login"
     register_button.click()
     time.sleep(1)
@@ -243,12 +227,8 @@ def test_registro_campos_vacios(driver):
     driver.get(f"{BASE_URL}/login")
     time.sleep(1)
 
-    # Clickear botón de registrar usuario
-    register_button = wait_for_element_clickable(driver, (By.LINK_TEXT, "Regístrate aquí"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "Regístrate"))
-    if not register_button:
-        register_button = wait_for_element_clickable(driver, (By.PARTIAL_LINK_TEXT, "aquí"))
+    # Clickear botón de registrar usuario (es un button, no un link)
+    register_button = wait_for_element_clickable(driver, (By.XPATH, "//button[contains(text(), 'Regístrate aquí')]"))
     assert register_button is not None, "Botón de registrar no encontrado en login"
     register_button.click()
     time.sleep(1)
@@ -258,5 +238,5 @@ def test_registro_campos_vacios(driver):
 
     time.sleep(1)
 
-    # Debe permanecer en la página de registro
-    assert "/register" in driver.current_url, "El formulario se envió con campos vacíos"
+    # Debe permanecer en la página de login
+    assert "/login" in driver.current_url, "El formulario se envió con campos vacíos"
