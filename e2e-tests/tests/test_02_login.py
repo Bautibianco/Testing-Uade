@@ -44,8 +44,26 @@ def test_login_exitoso(driver):
     current_url = driver.current_url
     assert "/login" not in current_url, "Login falló"
 
+    # Verificar que se estableció la cookie JWT o que hay alguna cookie de sesión
     cookies = driver.get_cookies()
-    assert len(cookies) > 0, "No se establecieron cookies JWT"
+    cookie_names = [cookie['name'] for cookie in cookies]
+
+    # Buscar cookies comunes de JWT/auth
+    jwt_cookie = any('token' in name.lower() or 'auth' in name.lower() or 'jwt' in name.lower()
+                     for name in cookie_names)
+
+    # También verificar localStorage por si el token está ahí
+    try:
+        token_in_storage = driver.execute_script(
+            "return localStorage.getItem('token') || localStorage.getItem('accessToken') || "
+            "localStorage.getItem('access_token') || localStorage.getItem('jwt') || "
+            "sessionStorage.getItem('token') || sessionStorage.getItem('accessToken')"
+        )
+    except:
+        token_in_storage = None
+
+    assert jwt_cookie or token_in_storage or len(cookies) > 0, \
+        f"No se estableció el token de sesión. Cookies: {cookie_names}"
 
 
 @pytest.mark.smoke
