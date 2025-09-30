@@ -171,60 +171,32 @@ e2e-tests/
 
 ## 🧩 Casos de Prueba Implementados
 
-### Historia 01 - Registro de Usuario (5 casos)
-- CP-01: Registro exitoso con datos válidos
-- CP-02: Validación de email duplicado
-- CP-03: Validación de contraseña corta
-- CP-04: Validación de formato de email inválido
-- CP-05: Validación de campos vacíos
+### Historia 01 - Registro de Usuario (2 casos)
+- **CP-01**: Registro exitoso con datos válidos (Happy Path)
+- **CP-02**: Validación de email duplicado (Unhappy Path)
 
-### Historia 02 - Inicio de Sesión (6 casos)
-- CP-06: Login exitoso con credenciales válidas
-- CP-07: Login con email incorrecto
-- CP-08: Login con contraseña incorrecta
-- CP-09: Login con campos vacíos
-- CP-10: Acceso a ruta protegida sin autenticación
-- CP-11: Persistencia de sesión JWT
+### Historia 02 - Inicio de Sesión (2 casos)
+- **CP-03**: Login exitoso con credenciales válidas (Happy Path)
+- **CP-04**: Login con credenciales inválidas (Unhappy Path)
 
-### Historia 03 - Crear Evento Académico (7 casos)
-- CP-12: Crear evento tipo Examen completo
-- CP-13: Crear evento tipo Entrega sin hora
-- CP-14: Crear evento tipo Recordatorio
-- CP-15: Validación de título obligatorio
-- CP-16: Validación de descripción obligatoria
-- CP-17: Validación de fecha obligatoria
-- CP-18: Validación de tipos de evento permitidos
+### Historia 03 - Crear Evento Académico (2 casos)
+- **CP-05**: Crear evento académico exitoso (Happy Path)
+- **CP-06**: Validación de campos obligatorios (Unhappy Path)
 
-### Historia 04 - Visualización de Calendario (9 casos)
-- CP-19: Visualizar calendario del mes actual
-- CP-20: Verificar que muestra mes y año
-- CP-21: Navegar al mes siguiente
-- CP-22: Navegar al mes anterior
-- CP-23: Verificar días con eventos marcados
-- CP-24: Click en día muestra eventos
-- CP-25: Diferenciación visual por tipo de evento
-- CP-26: Calendario sin eventos
-- CP-27: Eventos solo del usuario actual
+### Historia 04 - Visualización de Calendario (1 caso)
+- **CP-07**: Visualizar calendario mensual (Happy Path)
 
-### Historia 05 - Eliminar Evento (5 casos)
-- CP-28: Eliminar evento con confirmación
-- CP-29: Cancelar eliminación de evento
-- CP-30: Modal de confirmación aparece
-- CP-31: Evento eliminado desaparece del calendario
-- CP-32: Solo eliminar eventos propios
+### Historia 05 - Eliminar Evento (2 casos)
+- **CP-08**: Eliminar evento con confirmación (Happy Path)
+- **CP-09**: Cancelar eliminación de evento (Unhappy Path)
 
-### Historia 06 - Navegación (4 casos)
-- CP-33: Navbar visible en todas las páginas
-- CP-34: Navegar a la página de calendario
-- CP-35: Navegar a la página de nuevo evento
-- CP-36: Volver al calendario desde nuevo evento
+### Historia 06 - Navegación (1 caso)
+- **CP-10**: Navegación básica en la interfaz (Happy Path)
 
-### Historia 07 - Logout (3 casos)
-- CP-37: Cerrar sesión exitosamente
-- CP-38: Sesión eliminada después del logout
-- CP-39: Cookies eliminadas después del logout
+### Historia 07 - Logout (1 caso)
+- **CP-11**: Cerrar sesión exitosamente (Happy Path)
 
-**Total: 39 casos de prueba**
+**Total: 11 casos de prueba** basados 100% en los criterios de aceptación de los requisitos
 
 ## 🔧 Solución de Problemas
 
