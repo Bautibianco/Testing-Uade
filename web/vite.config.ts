@@ -54,15 +54,15 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/auth': {
-        target: 'http://localhost:3001',
+        target: 'https://testing-uade-backend.vercel.app',
         changeOrigin: true
       },
       '/events': {
-        target: 'http://localhost:3001',
+        target: 'https://testing-uade-backend.vercel.app',
         changeOrigin: true
       },
       '/health': {
-        target: 'http://localhost:3001',
+        target: 'https://testing-uade-backend.vercel.app',
         changeOrigin: true
       }
     }
