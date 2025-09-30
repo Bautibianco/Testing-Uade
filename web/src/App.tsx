@@ -29,13 +29,29 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 const AppRoutes: React.FC = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-50">
       {user && <Navbar />}
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/login"
+          element={
+            loading ? (
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+                  <span className="text-gray-600">Cargando...</span>
+                </div>
+              </div>
+            ) : user ? (
+              <Navigate to="/calendar" replace />
+            ) : (
+              <LoginPage />
+            )
+          }
+        />
         <Route 
           path="/calendar" 
           element={

@@ -12,10 +12,7 @@ const api = axios.create({
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Redirigir al login si no está autenticado
-      window.location.href = '/login';
-    }
+    // No forzar redirección aquí, dejar que React Router maneje la autenticación
     return Promise.reject(error);
   }
 );

@@ -34,21 +34,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      // Verificar si hay una cookie de autenticación
-      const response = await fetch('/health', { credentials: 'include' });
-      if (response.ok) {
-        // Si el servidor responde, asumimos que hay una sesión válida
-        // En una implementación real, podrías hacer una llamada a /auth/me
-        setUser({
-          _id: 'temp',
-          email: 'usuario@ejemplo.com',
-          organizations: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        });
+      const response = await api.get('/auth/me');
+      if (response.data && response.data.user) {
+        setUser(response.data.user);
       }
     } catch (error) {
       console.error('Error verificando autenticación:', error);
+      setUser(null);
     } finally {
       setLoading(false);
     }
