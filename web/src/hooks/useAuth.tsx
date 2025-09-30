@@ -39,7 +39,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.ok) {
         // Si el servidor responde, asumimos que hay una sesión válida
         // En una implementación real, podrías hacer una llamada a /auth/me
-        setUser({ _id: 'temp', email: 'usuario@ejemplo.com' });
+        setUser({
+          _id: 'temp',
+          email: 'usuario@ejemplo.com',
+          organizations: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
       }
     } catch (error) {
       console.error('Error verificando autenticación:', error);
