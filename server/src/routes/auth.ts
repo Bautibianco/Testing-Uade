@@ -2,12 +2,14 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { config } from '../config/env';
 import {
+    getCurrentUser,
     login,
     loginValidation,
     logout,
     register,
     registerValidation
 } from '../controllers/authController';
+import { requireAuth } from '../middlewares/auth';
 
 const router = Router();
 
@@ -178,5 +180,32 @@ router.post('/login', authLimiter, loginValidation, login);
  *                   example: Logout exitoso
  */
 router.post('/logout', logout);
+
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     summary: Obtener usuario actual
+ *     tags: [Auth]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuario autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/me', requireAuth, getCurrentUser);
 
 export default router;

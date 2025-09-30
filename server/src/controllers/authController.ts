@@ -122,3 +122,31 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   clearAuthCookie(res);
   res.status(204).send();
 };
+
+export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // El middleware requireAuth ya validó el token y agregó userId al request
+    const userId = (req as any).userId;
+
+    if (!userId) {
+      res.status(401).json({ error: 'No autenticado' });
+      return;
+    }
+
+    const user = await userRepo.findById(userId);
+    if (!user) {
+      res.status(404).json({ error: 'Usuario no encontrado' });
+      return;
+    }
+
+    res.status(200).json({
+      user: {
+        _id: user._id,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Error obteniendo usuario actual:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
