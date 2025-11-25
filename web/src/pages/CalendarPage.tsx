@@ -1,170 +1,201 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import CalendarMonth from '../components/CalendarMonth';
+import EventDetailModal from '../components/EventDetailModal';
+import EventEditModal from '../components/EventEditModal';
+import FilterDropdown, { FilterOption } from '../components/FilterDropdown';
+import SearchBar from '../components/SearchBar';
+import { useDebounce } from '../hooks/useDebounce';
 import { useEvents } from '../hooks/useEvents';
-import { Event } from '../types';
+import { CreateEventData, Event, EventType } from '../types';
 
 const CalendarPage: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { events, loading, deleteEvent } = useEvents(currentDate);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [eventToDelete, setEventToDelete] = useState<string | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const [filterType, setFilterType] = useState<FilterOption>('ALL');
+
+  const debouncedSearch = useDebounce(searchValue, 300);
+
+  const filters = useMemo(() => {
+    const normalizedSearch = debouncedSearch.trim();
+    return {
+      type: filterType !== 'ALL' ? (filterType as EventType) : undefined,
+      search: normalizedSearch || undefined
+    };
+  }, [debouncedSearch, filterType]);
+
+  const { events, loading, deleteEvent, updateEvent } = useEvents(currentDate, filters);
+
+  const hasActiveFilters = filterType !== 'ALL' || debouncedSearch.trim().length > 0;
+
+  const handleClearFilters = () => {
+    setFilterType('ALL');
+    setSearchValue('');
+  };
 
   const handleEventClick = (event: Event) => {
     setSelectedEvent(event);
+    setIsDetailModalOpen(true);
   };
 
-  const handleEventDelete = (eventId: string) => {
-    setEventToDelete(eventId);
-    setShowDeleteModal(true);
+  const closeAllModals = () => {
+    setIsDetailModalOpen(false);
+    setIsEditModalOpen(false);
+    setIsDeleteModalOpen(false);
+    setSelectedEvent(null);
   };
 
-  const confirmDelete = async () => {
-    if (eventToDelete) {
-      try {
-        await deleteEvent(eventToDelete);
-        setShowDeleteModal(false);
-        setEventToDelete(null);
-        setSelectedEvent(null);
-      } catch (error) {
-        console.error('Error eliminando evento:', error);
-      }
+  const handleSaveChanges = async (data: CreateEventData) => {
+    if (!selectedEvent) return;
+    try {
+      await updateEvent(selectedEvent._id, data);
+      toast.success('Evento actualizado con éxito');
+      closeAllModals();
+    } catch (error: any) {
+      toast.error(error?.message || 'No se pudo actualizar el evento');
+      throw error;
     }
   };
 
-  const cancelDelete = () => {
-    setShowDeleteModal(false);
-    setEventToDelete(null);
+  const handleDelete = async () => {
+    if (!selectedEvent) return;
+    try {
+      await deleteEvent(selectedEvent._id);
+      toast.success('Evento eliminado con éxito');
+      closeAllModals();
+    } catch (error) {
+      toast.error('No se pudo eliminar el evento');
+    }
+  };
+
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    if (selectedEvent) {
+      setIsDetailModalOpen(true);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Mi Calendario</h1>
-          <p className="text-gray-600">Organiza tus exámenes, trabajos y clases</p>
+          <p className="text-gray-600">Organiza tus exámenes, entregas y recordatorios</p>
         </div>
 
-        <div className="relative">
-          <CalendarMonth
-            events={events}
-            loading={loading}
-            currentDate={currentDate}
-            onDateChange={setCurrentDate}
-            onEventClick={handleEventClick}
-            onEventDelete={handleEventDelete}
-          />
+        <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end">
+            <div className="flex-1">
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Búsqueda rápida
+              </label>
+              <SearchBar
+                value={searchValue}
+                onChange={setSearchValue}
+                placeholder="Buscar por título o descripción"
+              />
+            </div>
+            <div className="md:w-64">
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Filtrar por tipo
+              </label>
+              <FilterDropdown value={filterType} onChange={setFilterType} />
+            </div>
+            {hasActiveFilters && (
+              <button
+                onClick={handleClearFilters}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+          {hasActiveFilters && (
+            <p className="mt-3 text-sm text-gray-500">
+              Mostrando {events.length} evento{events.length === 1 ? '' : 's'} filtrados por{' '}
+              {filterType !== 'ALL' && `tipo "${filterType === 'EXAM' ? 'Examen' : filterType === 'DELIVERY' ? 'Entrega' : 'Recordatorio'}"`}
+              {filterType !== 'ALL' && debouncedSearch.trim() ? ' y ' : ''}
+              {debouncedSearch.trim() && `búsqueda "${debouncedSearch.trim()}"`}
+            </p>
+          )}
         </div>
 
-        {/* Modal de confirmación de eliminación */}
-        {showDeleteModal && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
-              <div className="mt-3 text-center">
-                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                  <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mt-4">
-                  ¿Eliminar evento?
-                </h3>
-                <div className="mt-2 px-7 py-3">
-                  <p className="text-sm text-gray-500">
-                    Esta acción no se puede deshacer. El evento será eliminado permanentemente.
-                  </p>
-                </div>
-                <div className="flex justify-center space-x-4 mt-4">
-                  <button
-                    onClick={cancelDelete}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={confirmDelete}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Modal de detalles del evento */}
-        {selectedEvent && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-medium text-gray-900">
-                  Detalles del evento
-                </h3>
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Título</label>
-                  <p className="text-gray-900">{selectedEvent.title}</p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Tipo</label>
-                  <p className="text-gray-900">
-                    {selectedEvent.type === 'EXAM' && 'Examen'}
-                    {selectedEvent.type === 'DELIVERY' && 'Entrega'}
-                    {selectedEvent.type === 'CLASS' && 'Clase'}
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Fecha</label>
-                  <p className="text-gray-900">
-                    {new Date(selectedEvent.date).toLocaleDateString('es-ES', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </p>
-                </div>
-                
-                {selectedEvent.time && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Hora</label>
-                    <p className="text-gray-900">{selectedEvent.time}</p>
-                  </div>
-                )}
-                
-                {selectedEvent.description && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Descripción</label>
-                    <p className="text-gray-900">{selectedEvent.description}</p>
-                  </div>
-                )}
-              </div>
-              
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
-                >
-                  Cerrar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <CalendarMonth
+          events={events}
+          loading={loading}
+          currentDate={currentDate}
+          onDateChange={setCurrentDate}
+          onEventClick={handleEventClick}
+        />
       </div>
+
+      <EventDetailModal
+        event={selectedEvent}
+        isOpen={isDetailModalOpen}
+        onClose={closeAllModals}
+        onEdit={(event) => {
+          setSelectedEvent(event);
+          setIsDetailModalOpen(false);
+          setIsEditModalOpen(true);
+        }}
+        onDelete={(event) => {
+          setSelectedEvent(event);
+          setIsDetailModalOpen(false);
+          setIsDeleteModalOpen(true);
+        }}
+      />
+
+      <EventEditModal
+        event={selectedEvent}
+        isOpen={isEditModalOpen}
+        onClose={handleEditModalClose}
+        onSubmit={handleSaveChanges}
+      />
+
+      {isDeleteModalOpen && selectedEvent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <div className="flex items-center justify-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                <svg className="h-6 w-6 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <h3 className="mt-4 text-center text-lg font-semibold text-gray-900">
+              ¿Deseás eliminar este evento?
+            </h3>
+            <p className="mt-2 text-center text-sm text-gray-500">
+              Esta acción no se puede deshacer y se eliminará del calendario inmediatamente.
+            </p>
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                }}
+                className="rounded-lg border border-gray-300 px-4 py-2 font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDelete}
+                className="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                Eliminar evento
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

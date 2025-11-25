@@ -1,5 +1,7 @@
 import React from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import CalendarPage from './pages/CalendarPage';
@@ -20,7 +22,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
       </div>
     );
   }
-
+  
   if (!user) {
     return <Navigate to="/login" replace />;
   }
@@ -88,6 +90,7 @@ const App: React.FC = () => {
     <AuthProvider>
       <Router>
         <AppRoutes />
+        <ToastContainer position="top-right" autoClose={3000} />
       </Router>
     </AuthProvider>
   );

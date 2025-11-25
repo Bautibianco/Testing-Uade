@@ -1,9 +1,14 @@
 import { endOfMonth, format, startOfMonth } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ApiError, CreateEventData, Event, UpdateEventData } from '../types';
 import { api } from '../utils/api';
 
-export const useEvents = (date: Date) => {
+interface EventFilters {
+  type?: string;
+  search?: string;
+}
+
+export const useEvents = (date: Date, filters?: EventFilters) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -11,12 +16,24 @@ export const useEvents = (date: Date) => {
   const from = format(startOfMonth(date), 'yyyy-MM-dd');
   const to = format(endOfMonth(date), 'yyyy-MM-dd');
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await api.get<Event[]>(`/events?from=${from}&to=${to}`);
+      const params = new URLSearchParams({
+        from,
+        to
+      });
+
+      if (filters?.type) {
+        params.append('type', filters.type);
+      }
+      if (filters?.search) {
+        params.append('search', filters.search);
+      }
+
+      const response = await api.get<Event[]>(`/events?${params.toString()}`);
       setEvents(response.data || []);
     } catch (err: any) {
       const apiError = err.response?.data as ApiError;
@@ -24,7 +41,7 @@ export const useEvents = (date: Date) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters?.search, filters?.type, from, to]);
 
   const createEvent = async (eventData: CreateEventData): Promise<Event> => {
     try {
@@ -68,7 +85,7 @@ export const useEvents = (date: Date) => {
 
   useEffect(() => {
     fetchEvents();
-  }, [from, to]);
+  }, [fetchEvents]);
 
   return {
     events,

@@ -57,7 +57,7 @@ export const getEventTypeColor = (type: string): string => {
     case 'DELIVERY':
       return 'bg-amber-500 text-white';
     case 'CLASS':
-      return 'bg-blue-500 text-white';
+      return 'bg-emerald-500 text-white';
     default:
       return 'bg-gray-500 text-white';
   }
@@ -70,7 +70,7 @@ export const getEventTypeLabel = (type: string): string => {
     case 'DELIVERY':
       return 'Entrega';
     case 'CLASS':
-      return 'Clase';
+      return 'Recordatorio';
     default:
       return type;
   }

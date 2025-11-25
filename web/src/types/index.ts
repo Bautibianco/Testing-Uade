@@ -16,6 +16,7 @@ export interface Event {
   date: string; // YYYY-MM-DD
   time?: string; // HH:mm
   type: EventType;
+  organization?: string;
   remindDays?: number;
   deletedAt?: string;
   createdAt: string;

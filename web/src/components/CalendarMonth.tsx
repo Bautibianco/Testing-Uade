@@ -20,7 +20,6 @@ interface CalendarMonthProps {
   currentDate: Date;
   onDateChange: (date: Date) => void;
   onEventClick: (event: Event) => void;
-  onEventDelete: (eventId: string) => void;
 }
 
 const CalendarMonth: React.FC<CalendarMonthProps> = ({
@@ -28,8 +27,7 @@ const CalendarMonth: React.FC<CalendarMonthProps> = ({
   loading,
   currentDate,
   onDateChange,
-  onEventClick,
-  onEventDelete
+  onEventClick
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -62,7 +60,7 @@ const CalendarMonth: React.FC<CalendarMonthProps> = ({
   const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div className="relative rounded-lg border border-gray-200 bg-white shadow-sm">
       {/* Header del calendario */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <h2 className="text-xl font-semibold text-gray-900">
@@ -118,7 +116,6 @@ const CalendarMonth: React.FC<CalendarMonthProps> = ({
             isSelected={selectedDate ? isSameDay(day.date, selectedDate) : false}
             onDateClick={() => setSelectedDate(day.date)}
             onEventClick={onEventClick}
-            onEventDelete={onEventDelete}
           />
         ))}
       </div>
